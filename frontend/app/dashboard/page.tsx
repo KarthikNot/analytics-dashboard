@@ -12,10 +12,6 @@ import { motion } from "framer-motion"
 export default function DashboardPage() {
   return (
     <div className="p-6 space-y-6">
-      {/* Theme toggle */}
-      <div className="flex justify-end">
-        <ThemeToggle />
-      </div>
 
       {/* Metrics */}
       <motion.div

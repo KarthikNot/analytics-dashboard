@@ -1,8 +1,8 @@
-// components/Navbar.tsx
 "use client"
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import ThemeToggle from "@/components/ThemeToggle"
 import { cn } from "@/lib/utils"
 
 const navItems = [
@@ -17,8 +17,10 @@ export default function Navbar() {
 
   return (
     <nav className="w-full bg-background border-b px-6 py-4 shadow-sm flex items-center justify-between">
-      <div className="text-xl font-bold">AdMyBrand Analytics</div>
-      <div className="flex space-x-4">
+      <Link href="/" className="text-xl font-bold hover:opacity-80 transition">
+        AdMyBrand Analytics
+      </Link>
+      <div className="flex items-center space-x-4">
         {navItems.map((item) => (
           <Link
             key={item.href}
@@ -31,6 +33,8 @@ export default function Navbar() {
             {item.label}
           </Link>
         ))}
+        {/* Theme Toggle Button */}
+        <ThemeToggle />
       </div>
     </nav>
   )
