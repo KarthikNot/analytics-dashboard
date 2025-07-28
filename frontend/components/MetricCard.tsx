@@ -19,7 +19,7 @@ export default function MetricCard({ title, value, color = "text-primary" }: Met
     >
     <Card className="shadow-md hover:shadow-xl transition-shadow">
       <CardHeader>
-        <CardTitle className="text-base text-muted-foreground">{title}</CardTitle>
+        <CardTitle className="text-xl text-muted-foreground">{title}</CardTitle>
       </CardHeader>
       <CardContent>
         <p className={`text-2xl font-bold ${color}`}>{value}</p>

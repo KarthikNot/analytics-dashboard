@@ -11,7 +11,7 @@ import { motion } from "framer-motion"
 
 export default function DashboardPage() {
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-10">
 
       {/* Metrics */}
       <motion.div
@@ -33,21 +33,26 @@ export default function DashboardPage() {
         transition={{ duration: 0.5, delay: 0.2 }}
         className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
       >
-        <div className="bg-card rounded-2xl p-4 shadow-md h-72 dark:bg-muted/40">
-          <h2 className="text-lg font-semibold mb-2">Revenue Over Time</h2>
-          <LineChart data={mockLineData} />
+        <div className="bg-card rounded-2xl p-4 shadow-md h-100 dark:bg-muted/40 flex flex-col">
+          <h2 className="text-lg font-semibold mb-4">Revenue Over Time</h2>
+          <div className="flex-1 min-h-0">
+            <LineChart data={mockLineData} />
+          </div>
         </div>
 
-        <div className="bg-card rounded-2xl p-4 shadow-md h-72 dark:bg-muted/40">
-          <h2 className="text-lg font-semibold mb-2">User Signups</h2>
-          <BarChart data={mockBarData} />
+        <div className="bg-card rounded-2xl p-4 shadow-md h-100 dark:bg-muted/40 flex flex-col">
+          <h2 className="text-lg font-semibold mb-4">User Signups</h2>
+          <div className="flex-1 min-h-0">
+            <BarChart data={mockBarData} />
+          </div>
         </div>
 
-        <div className="bg-card rounded-2xl p-4 shadow-md h-72 dark:bg-muted/40">
-          <h2 className="text-lg font-semibold mb-2">Traffic Source</h2>
-          <PieChart data={mockPieData} />
+        <div className="bg-card rounded-2xl p-4 shadow-md h-100 dark:bg-muted/40 flex flex-col">
+          <h2 className="text-lg font-semibold mb-4">Traffic Source</h2>
+          <div className="flex-1 min-h-0">
+            <PieChart data={mockPieData} />
+          </div>
         </div>
-
       </motion.div>
         {/* Table */}
         <motion.div

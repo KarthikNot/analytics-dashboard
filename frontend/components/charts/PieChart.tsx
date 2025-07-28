@@ -29,8 +29,8 @@ export default function PieChart({ data, colors = defaultColors }: Props) {
           dataKey="value"
           nameKey="label"
           cx="50%"
-          cy="50%"
-          outerRadius={90}
+          cy="45%"
+          outerRadius={130}
           label
         >
           {data.map((_, i) => (
