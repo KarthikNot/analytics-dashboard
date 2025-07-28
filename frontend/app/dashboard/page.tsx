@@ -1,78 +1,67 @@
-"use client"
+'use client'
+
 import MetricCard from "@/components/MetricCard"
-import ChartCard from "@/components/ChartCard"
 import LineChart from "@/components/charts/LineChart"
 import BarChart from "@/components/charts/BarChart"
 import PieChart from "@/components/charts/PieChart"
+import ThemeToggle from "@/components/ThemeToggle"
+import { mockLineData, mockBarData, mockPieData } from "@/lib/mockData"
 import DataTable from "@/components/DataTable"
-
-import { ColumnDef } from "@tanstack/react-table"
-
-type TableData = {
-  campaign: string
-  impressions: number
-  clicks: number
-  conversions: number
-}
-
-const tableData: TableData[] = [
-  { campaign: "Brand Awareness", impressions: 12500, clicks: 340, conversions: 45 },
-  { campaign: "Lead Gen", impressions: 9500, clicks: 210, conversions: 28 },
-  { campaign: "Retargeting", impressions: 7200, clicks: 190, conversions: 32 },
-  { campaign: "Product Launch", impressions: 8400, clicks: 230, conversions: 50 },
-]
-
-const tableColumns: ColumnDef<TableData>[] = [
-  { accessorKey: "campaign", header: "Campaign" },
-  { accessorKey: "impressions", header: "Impressions" },
-  { accessorKey: "clicks", header: "Clicks" },
-  { accessorKey: "conversions", header: "Conversions" },
-]
-
-const chartData = [
-  { label: "Mon", value: 150 },
-  { label: "Tue", value: 180 },
-  { label: "Wed", value: 120 },
-  { label: "Thu", value: 220 },
-  { label: "Fri", value: 170 },
-]
-
-const pieData = [
-  { label: "Google Ads", value: 45 },
-  { label: "Facebook", value: 30 },
-  { label: "LinkedIn", value: 15 },
-  { label: "Twitter", value: 10 },
-]
+import { motion } from "framer-motion"
 
 export default function DashboardPage() {
   return (
-    <div className="space-y-8 p-4">
-      {/* Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-        <MetricCard title="Revenue" value="$12.4K" />
-        <MetricCard title="Users" value="3.1K" />
-        <MetricCard title="Conversions" value="318" />
-        <MetricCard title="Growth" value="8.6%" color="text-green-600" />
+    <div className="p-6 space-y-6">
+      {/* Theme toggle */}
+      <div className="flex justify-end">
+        <ThemeToggle />
       </div>
+
+      {/* Metrics */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+      >
+        <MetricCard title="Revenue" value="$42,000" icon="💰" />
+        <MetricCard title="Users" value="12,500" icon="👥" />
+        <MetricCard title="Conversions" value="870" icon="📈" />
+        <MetricCard title="Growth" value="18%" icon="🚀" />
+      </motion.div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        <ChartCard title="Weekly Conversions">
-          <LineChart data={chartData} />
-        </ChartCard>
-        <ChartCard title="Clicks by Day">
-          <BarChart data={chartData} />
-        </ChartCard>
-        <ChartCard title="Spend Distribution">
-          <PieChart data={pieData} />
-        </ChartCard>
-      </div>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+      >
+        <div className="bg-card rounded-2xl p-4 shadow-md h-72 dark:bg-muted/40">
+          <h2 className="text-lg font-semibold mb-2">Revenue Over Time</h2>
+          <LineChart data={mockLineData} />
+        </div>
 
-      {/* Table */}
-      <div>
-        <h2 className="text-xl font-semibold mb-2">Campaign Performance</h2>
-        <DataTable columns={tableColumns} data={tableData} />
-      </div>
+        <div className="bg-card rounded-2xl p-4 shadow-md h-72 dark:bg-muted/40">
+          <h2 className="text-lg font-semibold mb-2">User Signups</h2>
+          <BarChart data={mockBarData} />
+        </div>
+
+        <div className="bg-card rounded-2xl p-4 shadow-md h-72 dark:bg-muted/40">
+          <h2 className="text-lg font-semibold mb-2">Traffic Source</h2>
+          <PieChart data={mockPieData} />
+        </div>
+
+      </motion.div>
+        {/* Table */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.4 }}
+        >
+          <DataTable />
+        </motion.div>
     </div>
   )
 }
+
