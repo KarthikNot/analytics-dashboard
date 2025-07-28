@@ -18,6 +18,26 @@ const ITEMS_PER_PAGE = 5
 
 type SortKey = "campaign" | "platform" | "impressions" | "clicks" | "conversions" | "cost"
 
+// Define fixed widths for each column (in px)
+const COLUMN_WIDTHS: Record<SortKey, string> = {
+  campaign: "w-48",      // 12rem
+  platform: "w-32",      // 8rem
+  impressions: "w-32",   // 8rem
+  clicks: "w-28",        // 7rem
+  conversions: "w-32",   // 8rem
+  cost: "w-24",          // 6rem
+}
+
+// Add border classes for column separation
+const COLUMN_BORDERS: Record<SortKey, string> = {
+  campaign: "border-r border-gray-200 dark:border-white/10",
+  platform: "border-r border-gray-200 dark:border-white/10",
+  impressions: "border-r border-gray-200 dark:border-white/10",
+  clicks: "border-r border-gray-200 dark:border-white/10",
+  conversions: "border-r border-gray-200 dark:border-white/10",
+  cost: "", // last column, no right border
+}
+
 export default function DataTable() {
   const [search, setSearch] = useState("")
   const [page, setPage] = useState(1)
@@ -89,6 +109,16 @@ export default function DataTable() {
 
   const uniquePlatforms = Array.from(new Set(mockTableData.map(row => row.platform)))
 
+  // Table column keys in order
+  const columnKeys: SortKey[] = [
+    "campaign",
+    "platform",
+    "impressions",
+    "clicks",
+    "conversions",
+    "cost"
+  ]
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -156,17 +186,28 @@ export default function DataTable() {
       </div>
 
       <div className="overflow-x-auto rounded-2xl shadow ring-1 ring-black/5 dark:ring-white/10 bg-card">
-        <Table className="min-w-full">
+        <Table className="min-w-full table-fixed">
           <TableHeader>
             <TableRow>
-              {["campaign", "platform", "impressions", "clicks", "conversions", "cost"].map((key) => (
+              {columnKeys.map((key, idx) => (
                 <TableHead
                   key={key}
                   onClick={() => toggleSort(key as SortKey)}
-                  className="cursor-pointer px-6 py-3 uppercase text-xs font-bold tracking-wider"
+                  className={`cursor-pointer px-4 py-3 uppercase text-xs font-bold tracking-wider ${COLUMN_WIDTHS[key]} whitespace-normal break-words ${COLUMN_BORDERS[key]}`}
+                  style={{
+                    wordBreak: "break-word",
+                    whiteSpace: "normal",
+                  }}
+                  scope="col"
                 >
-                  {key}
-                  {sortKey === key && (sortOrder === "asc" ? "▼" : "▲")}
+                  <div className="flex items-center gap-1">
+                    <span>{key}</span>
+                    {sortKey === key && (
+                      <span className="inline-block w-4 text-center">
+                        {sortOrder === "asc" ? "▼" : "▲"}
+                      </span>
+                    )}
+                  </div>
                 </TableHead>
               ))}
             </TableRow>
@@ -181,12 +222,42 @@ export default function DataTable() {
             ) : (
               paginatedData.map((row) => (
                 <TableRow key={row.id} className="transition hover:bg-primary/10 dark:hover:bg-primary/20">
-                  <TableCell className="px-6 py-4 font-medium">{row.campaign}</TableCell>
-                  <TableCell className="px-6 py-4">{row.platform}</TableCell>
-                  <TableCell className="px-6 py-4 text-right">{row.impressions.toLocaleString()}</TableCell>
-                  <TableCell className="px-6 py-4 text-right">{row.clicks.toLocaleString()}</TableCell>
-                  <TableCell className="px-6 py-4 text-right">{row.conversions.toLocaleString()}</TableCell>
-                  <TableCell className="px-6 py-4 text-right font-semibold text-primary">{row.cost}</TableCell>
+                  <TableCell
+                    className={`px-4 py-4 font-medium align-top ${COLUMN_WIDTHS["campaign"]} whitespace-normal break-words ${COLUMN_BORDERS["campaign"]}`}
+                    style={{ wordBreak: "break-word", whiteSpace: "normal" }}
+                  >
+                    {row.campaign}
+                  </TableCell>
+                  <TableCell
+                    className={`px-4 py-4 align-top ${COLUMN_WIDTHS["platform"]} whitespace-normal break-words ${COLUMN_BORDERS["platform"]}`}
+                    style={{ wordBreak: "break-word", whiteSpace: "normal" }}
+                  >
+                    {row.platform}
+                  </TableCell>
+                  <TableCell
+                    className={`px-4 py-4 text-right align-top ${COLUMN_WIDTHS["impressions"]} whitespace-normal break-words ${COLUMN_BORDERS["impressions"]}`}
+                    style={{ wordBreak: "break-word", whiteSpace: "normal" }}
+                  >
+                    {row.impressions.toLocaleString()}
+                  </TableCell>
+                  <TableCell
+                    className={`px-4 py-4 text-right align-top ${COLUMN_WIDTHS["clicks"]} whitespace-normal break-words ${COLUMN_BORDERS["clicks"]}`}
+                    style={{ wordBreak: "break-word", whiteSpace: "normal" }}
+                  >
+                    {row.clicks.toLocaleString()}
+                  </TableCell>
+                  <TableCell
+                    className={`px-4 py-4 text-right align-top ${COLUMN_WIDTHS["conversions"]} whitespace-normal break-words ${COLUMN_BORDERS["conversions"]}`}
+                    style={{ wordBreak: "break-word", whiteSpace: "normal" }}
+                  >
+                    {row.conversions.toLocaleString()}
+                  </TableCell>
+                  <TableCell
+                    className={`px-4 py-4 text-right font-semibold text-primary align-top ${COLUMN_WIDTHS["cost"]} whitespace-normal break-words ${COLUMN_BORDERS["cost"]}`}
+                    style={{ wordBreak: "break-word", whiteSpace: "normal" }}
+                  >
+                    {row.cost}
+                  </TableCell>
                 </TableRow>
               ))
             )}
