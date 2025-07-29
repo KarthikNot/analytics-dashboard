@@ -1,17 +1,24 @@
-export const mockLineData = [
-  { label: "Jan", value: 5000 },
-  { label: "Feb", value: 8000 },
-  { label: "Mar", value: 12000 },
-  { label: "Apr", value: 10000 },
-  { label: "May", value: 15000 },
-  { label: "Jun", value: 17000 },
-  { label: "Jul", value: 16000 },
-  { label: "Aug", value: 18000 },
-  { label: "Sep", value: 14000 },
-  { label: "Oct", value: 15500 },
-  { label: "Nov", value: 16500 },
-  { label: "Dec", value: 20000 },
-]
+// Generate 712 days (356*2) of mock line data with small random walk
+function generateMockLineData() {
+  const days = 356 * 2
+  const startDate = new Date()
+  startDate.setDate(startDate.getDate() - days + 1)
+  let value = 2000 + Math.floor(Math.random() * 2000) // start value
+  const data = []
+  for (let i = 0; i < days; i++) {
+    // Format date as yyyy-mm-dd
+    const date = new Date(startDate)
+    date.setDate(startDate.getDate() + i)
+    const label = date.toISOString().slice(0, 10)
+    // Random walk: change by -200 to +200
+    const change = Math.floor(Math.random() * 401) - 200
+    value = Math.max(0, value + change)
+    data.push({ label, value })
+  }
+  return data
+}
+
+export const mockLineData = generateMockLineData()
 
 export const mockBarData = [
   { label: "Mon", value: 300 },
