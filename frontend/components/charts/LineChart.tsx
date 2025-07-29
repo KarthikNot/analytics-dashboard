@@ -115,14 +115,36 @@ function getYAxisDomain(range: RangeKey, filteredData: DataPoint[]) {
 }
 
 export default function LineChart({ data, color = "#3b82f6" }: Props) {
-  const [range, setRange] = useState<RangeKey>("all")
-  const [animationKey, setAnimationKey] = useState(0)
-  const prevRange = useRef<RangeKey>("all")
-
-  // Sort data by date ascending
+  // --- Date filter state ---
+  // Find min/max date in data for default values
   const sortedData = useMemo(() => {
     return [...data].sort((a, b) => new Date(a.label).getTime() - new Date(b.label).getTime())
   }, [data])
+
+  const minDataDate = useMemo(() => {
+    if (!sortedData.length) return ""
+    return sortedData[0].label
+  }, [sortedData])
+  const maxDataDate = useMemo(() => {
+    if (!sortedData.length) return ""
+    return sortedData[sortedData.length - 1].label
+  }, [sortedData])
+
+  // Date filter state
+  const [fromDate, setFromDate] = useState<string>(minDataDate)
+  const [toDate, setToDate] = useState<string>(maxDataDate)
+
+  // Range dropdown state
+  const [range, setRange] = useState<RangeKey>("all")
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [animationKey, setAnimationKey] = useState(0)
+  const prevRange = useRef<RangeKey>("all")
+
+  // When data changes, reset date filters to min/max
+  useEffect(() => {
+    setFromDate(minDataDate)
+    setToDate(maxDataDate)
+  }, [minDataDate, maxDataDate])
 
   // Find latest date in data
   const latestDate = useMemo(() => {
@@ -130,16 +152,34 @@ export default function LineChart({ data, color = "#3b82f6" }: Props) {
     return new Date(sortedData[sortedData.length - 1].label)
   }, [sortedData])
 
-  // Filter data by selected range
+  // When a range is selected, update fromDate/toDate accordingly
+  useEffect(() => {
+    if (!latestDate) return
+    if (range === "all") {
+      setFromDate(minDataDate)
+      setToDate(maxDataDate)
+    } else {
+      const startDate = getRangeStartDate(latestDate, range)
+      if (startDate) {
+        // Clamp to available data
+        const startStr = sortedData.find(d => new Date(d.label) >= startDate)?.label || minDataDate
+        setFromDate(startStr)
+        setToDate(maxDataDate)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [range, latestDate, minDataDate, maxDataDate, sortedData])
+
+  // Filter data by fromDate/toDate
   const filteredData = useMemo(() => {
-    if (range === "all" || !latestDate) return sortedData
-    const startDate = getRangeStartDate(latestDate, range)
-    if (!startDate) return sortedData
+    if (!fromDate || !toDate) return sortedData
+    const from = new Date(fromDate)
+    const to = new Date(toDate)
     return sortedData.filter(d => {
       const dDate = new Date(d.label)
-      return dDate >= startDate && dDate <= latestDate
+      return dDate >= from && dDate <= to
     })
-  }, [sortedData, latestDate, range])
+  }, [sortedData, fromDate, toDate])
 
   // Find the max and min value for accent dots
   const maxValue = Math.max(...filteredData.map(d => d.value))
@@ -189,24 +229,101 @@ export default function LineChart({ data, color = "#3b82f6" }: Props) {
     prevRange.current = range
   }, [range])
 
+  // Handlers for date input
+  const handleFromDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFromDate(e.target.value)
+    setRange("all") // Reset range dropdown to "all" when custom date is picked
+  }
+  const handleToDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setToDate(e.target.value)
+    setRange("all")
+  }
+
+  // Dropdown menu for range selection
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!dropdownOpen) return
+    function handleClick(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClick)
+    return () => document.removeEventListener("mousedown", handleClick)
+  }, [dropdownOpen])
+
   return (
     <div className="flex flex-col h-full">
-      {/* Range filter buttons */}
-      <div className="mb-2 flex gap-2">
-        {RANGE_OPTIONS.map(opt => (
-          <button
-            key={opt.key}
-            className={`px-3 py-1 rounded-lg text-xs font-medium border transition-colors
-              ${range === opt.key
-                ? "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-700"
-                : "bg-transparent text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800/40"
-              }`}
-            onClick={() => setRange(opt.key)}
-            type="button"
-          >
-            {opt.label}
-          </button>
-        ))}
+      {/* Date filter and range dropdown */}
+      <div className="mb-2 flex flex-wrap gap-2 items-center">
+        <div className="flex items-center gap-1">
+          <label htmlFor="from-date" className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">From</label>
+          <input
+            id="from-date"
+            type="date"
+            className="px-2 py-1 rounded border border-zinc-200 dark:border-zinc-700 text-xs bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-200"
+            value={fromDate}
+            min={minDataDate}
+            max={toDate}
+            onChange={handleFromDateChange}
+            style={{ width: 120 }}
+          />
+        </div>
+        <div className="flex items-center gap-1">
+          <label htmlFor="to-date" className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">To</label>
+          <input
+            id="to-date"
+            type="date"
+            className="px-2 py-1 rounded border border-zinc-200 dark:border-zinc-700 text-xs bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-200"
+            value={toDate}
+            min={fromDate}
+            max={maxDataDate}
+            onChange={handleToDateChange}
+            style={{ width: 120 }}
+          />
+        </div>
+        {/* Range dropdown */}
+        <div className="flex-1 flex justify-end">
+          <div className="relative" ref={dropdownRef}>
+            <button
+              type="button"
+              className={`px-3 py-1 rounded-lg text-xs font-medium border transition-colors flex items-center gap-1
+                ${dropdownOpen
+                  ? "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-700"
+                  : "bg-transparent text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800/40"
+                }`}
+              onClick={() => setDropdownOpen(v => !v)}
+            >
+              {RANGE_OPTIONS.find(opt => opt.key === range)?.label || "Range"}
+              <svg className="w-3 h-3 ml-1" viewBox="0 0 16 16" fill="none">
+                <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            {dropdownOpen && (
+              <div className="absolute z-10 mt-1 left-0 w-36 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-lg">
+                {RANGE_OPTIONS.map(opt => (
+                  <button
+                    key={opt.key}
+                    className={`w-full text-left px-3 py-2 text-xs font-medium rounded-lg transition-colors
+                      ${range === opt.key
+                        ? "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300"
+                        : "hover:bg-zinc-100 dark:hover:bg-zinc-800/40 text-zinc-500 dark:text-zinc-400"
+                      }`}
+                    onClick={() => {
+                      setRange(opt.key)
+                      setDropdownOpen(false)
+                    }}
+                    type="button"
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
       <div className="flex-1 min-h-0">
         <ResponsiveContainer width="100%" height="100%">

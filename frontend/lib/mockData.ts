@@ -3,7 +3,7 @@ function generateMockLineData() {
   const days = 356 * 2
   const startDate = new Date()
   startDate.setDate(startDate.getDate() - days + 1)
-  let value = 2000 + Math.floor(Math.random() * 2000) // start value
+  let value = 5000 + Math.floor(Math.random() * 200) // start value
   const data = []
   for (let i = 0; i < days; i++) {
     // Format date as yyyy-mm-dd

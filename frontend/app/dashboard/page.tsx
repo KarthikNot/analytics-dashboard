@@ -9,74 +9,8 @@ import { mockLineData, mockBarData, mockPieData } from "@/lib/mockData"
 import DataTable from "@/components/DataTable"
 import { motion } from "framer-motion"
 import { useRef } from "react"
-import * as XLSX from "xlsx"
 
-// Helper to calculate percent change between yesterday and day before
-function getPercentChange(data: { label: string, value: number }[]) {
-  if (!data || data.length < 2) return null
-  // Sort by label (date string)
-  const sorted = [...data].sort((a, b) => a.label.localeCompare(b.label))
-  const yesterday = sorted[sorted.length - 1]
-  const dayBefore = sorted[sorted.length - 2]
-  if (!yesterday || !dayBefore || dayBefore.value === 0) return null
-  const change = ((yesterday.value - dayBefore.value) / dayBefore.value) * 100
-  return change
-}
-
-// --- Download helpers ---
-function downloadCSV(data: { label: string, value: number }[], filename = "user_signups.csv") {
-  const header = "Date,Signups\n"
-  const rows = data.map(d => `${d.label},${d.value}`).join("\n")
-  const csv = header + rows
-  const blob = new Blob([csv], { type: "text/csv" })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement("a")
-  a.href = url
-  a.download = filename
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
-}
-
-function downloadJSON(data: { label: string, value: number }[], filename = "user_signups.json") {
-  const json = JSON.stringify(data, null, 2)
-  const blob = new Blob([json], { type: "application/json" })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement("a")
-  a.href = url
-  a.download = filename
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
-}
-
-
-// This implementation generates a real Microsoft Excel .xlsx file using the SheetJS (xlsx) library.
-function downloadXLSX(data: { label: string, value: number }[], filename = "user_signups.xlsx") {
-  // Prepare worksheet data: header + rows
-  const wsData = [
-    ["Date", "Signups"],
-    ...data.map(d => [d.label, d.value])
-  ]
-  // Create worksheet and workbook
-  const ws = XLSX.utils.aoa_to_sheet(wsData)
-  const wb = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(wb, ws, "UserSignups")
-  // Write workbook to binary array
-  const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" })
-  // Create blob and trigger download
-  const blob = new Blob([wbout], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement("a")
-  a.href = url
-  a.download = filename
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
-}
+import { getPercentChange, downloadCSV, downloadJSON, downloadXLSX } from '@/app/dashboard/helpers'
 
 export default function DashboardPage() {
   // Calculate percent changes
@@ -118,8 +52,9 @@ export default function DashboardPage() {
     )
   }
 
-  // Download dropdown state (optional: for accessibility/focus)
-  const downloadMenuRef = useRef<HTMLDivElement>(null)
+  // Download dropdown refs (one for each chart)
+  const downloadMenuRefSignups = useRef<HTMLDivElement>(null)
+  const downloadMenuRefRevenue = useRef<HTMLDivElement>(null)
 
   return (
     <div className="p-6 space-y-10">
@@ -145,10 +80,61 @@ export default function DashboardPage() {
         className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
       >
         <div className="bg-card rounded-2xl p-4 shadow-md h-100 dark:bg-muted/40 flex flex-col">
-          <h2 className="text-lg font-semibold mb-4 flex items-center">
-            Revenue Over Time
-            {formatChange(revenueChange)}
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold flex items-center">
+              Revenue Over Time
+              {formatChange(revenueChange)}
+            </h2>
+            {/* Download dropdown for revenue */}
+            <div className="relative" ref={downloadMenuRefRevenue}>
+              <button
+                className="px-2 py-1 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-xs border border-zinc-200 dark:border-zinc-700 flex items-center gap-1"
+                title="Download revenue over time data"
+                tabIndex={0}
+                aria-haspopup="true"
+                aria-expanded="false"
+                onClick={e => {
+                  const menu = downloadMenuRefRevenue.current?.querySelector('.download-menu')
+                  if (menu) {
+                    menu.classList.toggle('hidden')
+                  }
+                }}
+              >
+                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
+                </svg>
+              </button>
+              <div className="download-menu absolute right-0 mt-1 z-10 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded shadow-lg min-w-[120px] hidden">
+                <button
+                  className="block w-full text-left px-4 py-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                  onClick={() => {
+                    downloadCSV(mockLineData, "revenue_over_time.csv")
+                    downloadMenuRefRevenue.current?.querySelector('.download-menu')?.classList.add('hidden')
+                  }}
+                >
+                  CSV
+                </button>
+                <button
+                  className="block w-full text-left px-4 py-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                  onClick={() => {
+                    downloadJSON(mockLineData, "revenue_over_time.json")
+                    downloadMenuRefRevenue.current?.querySelector('.download-menu')?.classList.add('hidden')
+                  }}
+                >
+                  JSON
+                </button>
+                <button
+                  className="block w-full text-left px-4 py-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                  onClick={() => {
+                    downloadXLSX(mockLineData, "revenue_over_time.xlsx")
+                    downloadMenuRefRevenue.current?.querySelector('.download-menu')?.classList.add('hidden')
+                  }}
+                >
+                  XLSX
+                </button>
+              </div>
+            </div>
+          </div>
           <div className="flex-1 min-h-0">
             <LineChart data={mockLineData} />
           </div>
@@ -160,8 +146,8 @@ export default function DashboardPage() {
               User Signups
               {formatChange(signupChange)}
             </h2>
-            {/* Download dropdown */}
-            <div className="relative" ref={downloadMenuRef}>
+            {/* Download dropdown for signups */}
+            <div className="relative" ref={downloadMenuRefSignups}>
               <button
                 className="px-2 py-1 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-xs border border-zinc-200 dark:border-zinc-700 flex items-center gap-1"
                 title="Download user signups data"
@@ -169,9 +155,7 @@ export default function DashboardPage() {
                 aria-haspopup="true"
                 aria-expanded="false"
                 onClick={e => {
-                  // Toggle menu (optional: implement dropdown if desired)
-                  // For now, show a simple menu on click
-                  const menu = downloadMenuRef.current?.querySelector('.download-menu')
+                  const menu = downloadMenuRefSignups.current?.querySelector('.download-menu')
                   if (menu) {
                     menu.classList.toggle('hidden')
                   }
@@ -186,7 +170,7 @@ export default function DashboardPage() {
                   className="block w-full text-left px-4 py-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800"
                   onClick={() => {
                     downloadCSV(mockBarData)
-                    downloadMenuRef.current?.querySelector('.download-menu')?.classList.add('hidden')
+                    downloadMenuRefSignups.current?.querySelector('.download-menu')?.classList.add('hidden')
                   }}
                 >
                   CSV
@@ -195,7 +179,7 @@ export default function DashboardPage() {
                   className="block w-full text-left px-4 py-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800"
                   onClick={() => {
                     downloadJSON(mockBarData)
-                    downloadMenuRef.current?.querySelector('.download-menu')?.classList.add('hidden')
+                    downloadMenuRefSignups.current?.querySelector('.download-menu')?.classList.add('hidden')
                   }}
                 >
                   JSON
@@ -204,7 +188,7 @@ export default function DashboardPage() {
                   className="block w-full text-left px-4 py-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800"
                   onClick={() => {
                     downloadXLSX(mockBarData)
-                    downloadMenuRef.current?.querySelector('.download-menu')?.classList.add('hidden')
+                    downloadMenuRefSignups.current?.querySelector('.download-menu')?.classList.add('hidden')
                   }}
                 >
                   XLSX
