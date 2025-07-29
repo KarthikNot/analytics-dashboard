@@ -20,15 +20,26 @@ function generateMockLineData() {
 
 export const mockLineData = generateMockLineData()
 
-export const mockBarData = [
-  { label: "Mon", value: 300 },
-  { label: "Tue", value: 450 },
-  { label: "Wed", value: 700 },
-  { label: "Thu", value: 600 },
-  { label: "Fri", value: 900 },
-  { label: "Sat", value: 750 },
-  { label: "Sun", value: 500 },
-]
+// Generate 730 days (365*2) of mock bar data with yyyy-mm-dd labels
+function generateMockBarData() {
+  const days = 365 * 2
+  const startDate = new Date()
+  startDate.setDate(startDate.getDate() - days + 1)
+  let value = 500 + Math.floor(Math.random() * 500) // start value
+  const data = []
+  for (let i = 0; i < days; i++) {
+    const date = new Date(startDate)
+    date.setDate(startDate.getDate() + i)
+    const label = date.toISOString().slice(0, 10)
+    // Random walk: change by -100 to +100
+    const change = Math.floor(Math.random() * 201) - 100
+    value = Math.max(0, value + change)
+    data.push({ label, value })
+  }
+  return data
+}
+
+export const mockBarData = generateMockBarData()
 
 export const mockPieData = [
   { label: "Organic", value: 45 },
