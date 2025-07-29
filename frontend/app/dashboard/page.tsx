@@ -55,6 +55,7 @@ export default function DashboardPage() {
   // Download dropdown refs (one for each chart)
   const downloadMenuRefSignups = useRef<HTMLDivElement>(null)
   const downloadMenuRefRevenue = useRef<HTMLDivElement>(null)
+  const downloadMenuRefPie = useRef<HTMLDivElement>(null)
 
   return (
     <div className="p-6 space-y-10">
@@ -202,7 +203,60 @@ export default function DashboardPage() {
         </div>
 
         <div className="bg-card rounded-2xl p-4 shadow-md h-100 dark:bg-muted/40 flex flex-col">
-          <h2 className="text-lg font-semibold mb-4">Traffic Source</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold">
+              Traffic Source
+            </h2>
+            {/* Download dropdown for pie chart */}
+            <div className="relative" ref={downloadMenuRefPie}>
+              <button
+                className="px-2 py-1 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-xs border border-zinc-200 dark:border-zinc-700 flex items-center gap-1"
+                title="Download traffic source data"
+                tabIndex={0}
+                aria-haspopup="true"
+                aria-expanded="false"
+                onClick={e => {
+                  const menu = downloadMenuRefPie.current?.querySelector('.download-menu')
+                  if (menu) {
+                    menu.classList.toggle('hidden')
+                  }
+                }}
+              >
+                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
+                </svg>
+              </button>
+              <div className="download-menu absolute right-0 mt-1 z-10 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded shadow-lg min-w-[120px] hidden">
+                <button
+                  className="block w-full text-left px-4 py-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                  onClick={() => {
+                    downloadCSV(mockPieData, "traffic_source.csv")
+                    downloadMenuRefPie.current?.querySelector('.download-menu')?.classList.add('hidden')
+                  }}
+                >
+                  CSV
+                </button>
+                <button
+                  className="block w-full text-left px-4 py-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                  onClick={() => {
+                    downloadJSON(mockPieData, "traffic_source.json")
+                    downloadMenuRefPie.current?.querySelector('.download-menu')?.classList.add('hidden')
+                  }}
+                >
+                  JSON
+                </button>
+                <button
+                  className="block w-full text-left px-4 py-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                  onClick={() => {
+                    downloadXLSX(mockPieData, "traffic_source.xlsx")
+                    downloadMenuRefPie.current?.querySelector('.download-menu')?.classList.add('hidden')
+                  }}
+                >
+                  XLSX
+                </button>
+              </div>
+            </div>
+          </div>
           <div className="flex-1 min-h-0">
             <PieChart data={mockPieData} />
           </div>
