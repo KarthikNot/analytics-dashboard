@@ -1,8 +1,10 @@
 'use client';
 
+import React, { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { RefreshCw, Calendar, Bell } from 'lucide-react';
+import { NotificationsPopover } from '@/components/ui/notifications-popover';
 
 interface DashboardHeaderProps {
   onRefresh: () => void;
@@ -10,6 +12,9 @@ interface DashboardHeaderProps {
 }
 
 export function DashboardHeader({ onRefresh, isRefreshing }: DashboardHeaderProps) {
+  const [notifOpen, setNotifOpen] = useState(false);
+  const bellBtnRef = useRef(null);
+
   return (
     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
       <div>
@@ -24,9 +29,17 @@ export function DashboardHeader({ onRefresh, isRefreshing }: DashboardHeaderProp
         <Button variant="outline" size="icon">
           <Calendar className="h-4 w-4" />
         </Button>
-        <Button variant="outline" size="icon">
-          <Bell className="h-4 w-4" />
-        </Button>
+        <div className="relative" ref={bellBtnRef}>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setNotifOpen(v => !v)}
+            aria-label="Show notifications"
+          >
+            <Bell className="h-4 w-4" />
+          </Button>
+          <NotificationsPopover open={notifOpen} onClose={() => setNotifOpen(false)} />
+        </div>
         <Button
           variant="outline"
           size="icon"

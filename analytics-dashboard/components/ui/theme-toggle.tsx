@@ -9,11 +9,19 @@ import { Button } from '@/components/ui/button';
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
 
+  function handleToggle() {
+    document.body.classList.add('theme-transition');
+    setTheme(theme === 'light' ? 'dark' : 'light');
+    setTimeout(() => {
+      document.body.classList.remove('theme-transition');
+    }, 400); // matches your transition duration
+  }
+
   return (
     <Button
       variant="outline"
       size="icon"
-      onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+      onClick={handleToggle}
       className="relative"
     >
       <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
