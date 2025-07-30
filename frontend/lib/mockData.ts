@@ -1,279 +1,487 @@
-// Generate 712 days (356*2) of mock line data with small random walk
-function generateMockLineData() {
-  const days = 356 * 2
-  const startDate = new Date()
-  startDate.setDate(startDate.getDate() - days + 1)
-  let value = 5000 + Math.floor(Math.random() * 200) // start value
-  const data = []
-  for (let i = 0; i < days; i++) {
-    // Format date as yyyy-mm-dd
-    const date = new Date(startDate)
-    date.setDate(startDate.getDate() + i)
-    const label = date.toISOString().slice(0, 10)
-    // Random walk: change by -200 to +200
-    const change = Math.floor(Math.random() * 401) - 200
-    value = Math.max(0, value + change)
-    data.push({ label, value })
-  }
-  return data
+// Enhanced Mock data for ADmyBRAND Insights Analytics Dashboard
+export interface MetricData {
+  label: string;
+  value: string;
+  change: number;
+  changeType: 'positive' | 'negative' | 'neutral';
+  icon: string;
+  trend: number[];
+  target?: string;
+  description?: string;
 }
 
-export const mockLineData = generateMockLineData()
-
-// Generate 730 days (365*2) of mock bar data with yyyy-mm-dd labels
-function generateMockBarData() {
-  const days = 365 * 2
-  const startDate = new Date()
-  startDate.setDate(startDate.getDate() - days + 1)
-  let value = 500 + Math.floor(Math.random() * 500) // start value
-  const data = []
-  for (let i = 0; i < days; i++) {
-    const date = new Date(startDate)
-    date.setDate(startDate.getDate() + i)
-    const label = date.toISOString().slice(0, 10)
-    // Random walk: change by -100 to +100
-    const change = Math.floor(Math.random() * 201) - 100
-    value = Math.max(0, value + change)
-    data.push({ label, value })
-  }
-  return data
+export interface ChartDataPoint {
+  name: string;
+  value: number;
+  revenue?: number;
+  users?: number;
+  conversions?: number;
+  impressions?: number;
+  clicks?: number;
+  ctr?: number;
+  cpc?: number;
+  roas?: number;
+  date?: string;
 }
 
-export const mockBarData = generateMockBarData()
+export interface CampaignData {
+  id: string;
+  name: string;
+  status: 'active' | 'paused' | 'completed';
+  budget: number;
+  spent: number;
+  clicks: number;
+  impressions: number;
+  ctr: number;
+  conversions: number;
+  cost_per_conversion: number;
+  roi: number;
+  platform: string;
+  audience_size: number;
+  engagement_rate: number;
+}
 
-export const mockPieData = [
-  { label: "Organic", value: 45 },
-  { label: "Paid", value: 25 },
-  { label: "Referral", value: 20 },
-  { label: "Social", value: 10 },
-  { label: "Email", value: 8 },
-  { label: "Direct", value: 12 },
-]
+export interface AIInsight {
+  id: string;
+  type: 'opportunity' | 'warning' | 'recommendation' | 'prediction';
+  title: string;
+  description: string;
+  impact: 'high' | 'medium' | 'low';
+  confidence: number;
+  action?: string;
+  metric_affected?: string;
+  potential_value?: string;
+}
 
-export const mockTableData = [
+export interface GeographicData {
+  country: string;
+  users: number;
+  revenue: number;
+  conversion_rate: number;
+  coordinates: [number, number];
+}
+
+export interface DeviceData {
+  device: string;
+  users: number;
+  sessions: number;
+  bounce_rate: number;
+  avg_session_duration: number;
+}
+
+export interface FunnelData {
+  stage: string;
+  users: number;
+  conversion_rate: number;
+  drop_off: number;
+}
+
+export interface HeatmapData {
+  hour: number;
+  day: string;
+  value: number;
+}
+
+// Enhanced key metrics data
+export const metricsData: MetricData[] = [
   {
-    id: "1",
-    campaign: "Launch A",
-    platform: "Google",
-    impressions: 12000,
-    clicks: 800,
-    conversions: 150,
-    cost: "$400"
+    label: 'Total Revenue',
+    value: '$2,847,291',
+    change: 12.5,
+    changeType: 'positive',
+    icon: 'DollarSign',
+    trend: [65000, 72000, 68000, 79000, 85000, 91000, 88000],
+    target: '$3,000,000',
+    description: 'Monthly recurring revenue from all channels'
   },
   {
-    id: "2",
-    campaign: "Promo B",
-    platform: "Facebook",
-    impressions: 9000,
-    clicks: 600,
-    conversions: 120,
-    cost: "$300"
+    label: 'Active Users',
+    value: '584,953',
+    change: 8.2,
+    changeType: 'positive',
+    icon: 'Users',
+    trend: [45000, 52000, 48000, 61000, 67000, 72000, 69000],
+    target: '600,000',
+    description: 'Monthly active users across all platforms'
   },
   {
-    id: "3",
-    campaign: "Spring Sale",
-    platform: "Instagram",
-    impressions: 15000,
-    clicks: 950,
-    conversions: 200,
-    cost: "$500"
+    label: 'Conversions',
+    value: '28,429',
+    change: -2.1,
+    changeType: 'negative',
+    icon: 'Target',
+    trend: [2100, 2300, 2000, 2500, 2700, 2400, 2200],
+    target: '30,000',
+    description: 'Total conversions from all marketing channels'
   },
   {
-    id: "4",
-    campaign: "Holiday Blast",
-    platform: "Twitter",
-    impressions: 8000,
-    clicks: 500,
-    conversions: 90,
-    cost: "$250"
+    label: 'ROAS',
+    value: '4.8x',
+    change: 15.3,
+    changeType: 'positive',
+    icon: 'TrendingUp',
+    trend: [3.2, 3.8, 3.5, 4.1, 4.3, 4.6, 4.8],
+    target: '5.0x',
+    description: 'Return on advertising spend across campaigns'
   },
   {
-    id: "5",
-    campaign: "Summer Push",
-    platform: "LinkedIn",
-    impressions: 11000,
-    clicks: 700,
-    conversions: 130,
-    cost: "$350"
+    label: 'Customer LTV',
+    value: '$1,247',
+    change: 6.7,
+    changeType: 'positive',
+    icon: 'Heart',
+    trend: [1100, 1150, 1120, 1180, 1200, 1230, 1247],
+    target: '$1,400',
+    description: 'Average customer lifetime value'
   },
   {
-    id: "6",
-    campaign: "Black Friday",
-    platform: "Google",
-    impressions: 20000,
-    clicks: 1500,
-    conversions: 350,
-    cost: "$900"
+    label: 'Churn Rate',
+    value: '2.3%',
+    change: -0.8,
+    changeType: 'positive',
+    icon: 'UserMinus',
+    trend: [3.1, 2.9, 3.2, 2.7, 2.5, 2.4, 2.3],
+    target: '2.0%',
+    description: 'Monthly customer churn rate'
   },
   {
-    id: "7",
-    campaign: "Winter Deals",
-    platform: "Snapchat",
-    impressions: 9500,
-    clicks: 650,
-    conversions: 110,
-    cost: "$320"
+    label: 'Avg. Order Value',
+    value: '$127',
+    change: 4.2,
+    changeType: 'positive',
+    icon: 'ShoppingCart',
+    trend: [115, 118, 122, 119, 124, 125, 127],
+    target: '$135',
+    description: 'Average order value per transaction'
   },
   {
-    id: "8",
-    campaign: "Back to School",
-    platform: "TikTok",
-    impressions: 13000,
-    clicks: 900,
-    conversions: 180,
-    cost: "$480"
-  },
-  {
-    id: "9",
-    campaign: "Cyber Monday",
-    platform: "Google",
-    impressions: 17000,
-    clicks: 1200,
-    conversions: 260,
-    cost: "$800"
-  },
-  {
-    id: "10",
-    campaign: "Year End",
-    platform: "Facebook",
-    impressions: 10500,
-    clicks: 720,
-    conversions: 140,
-    cost: "$370"
-  },
-  {
-    id: "11",
-    campaign: "Brand Awareness",
-    platform: "Instagram",
-    impressions: 14000,
-    clicks: 850,
-    conversions: 170,
-    cost: "$420"
-  },
-  {
-    id: "12",
-    campaign: "Lead Gen",
-    platform: "LinkedIn",
-    impressions: 12500,
-    clicks: 780,
-    conversions: 160,
-    cost: "$390"
-  },
-  {
-    id: "13",
-    campaign: "Retargeting",
-    platform: "Twitter",
-    impressions: 9000,
-    clicks: 610,
-    conversions: 100,
-    cost: "$310"
-  },
-  {
-    id: "14",
-    campaign: "Product Launch",
-    platform: "Google",
-    impressions: 18500,
-    clicks: 1350,
-    conversions: 300,
-    cost: "$950"
-  },
-  {
-    id: "15",
-    campaign: "Spring Promo",
-    platform: "Facebook",
-    impressions: 11200,
-    clicks: 730,
-    conversions: 145,
-    cost: "$360"
-  },
-  {
-    id: "16",
-    campaign: "Summer Sale",
-    platform: "Instagram",
-    impressions: 16000,
-    clicks: 1000,
-    conversions: 210,
-    cost: "$540"
-  },
-  {
-    id: "17",
-    campaign: "Holiday Cheer",
-    platform: "Snapchat",
-    impressions: 8700,
-    clicks: 570,
-    conversions: 95,
-    cost: "$270"
-  },
-  {
-    id: "18",
-    campaign: "Q1 Push",
-    platform: "TikTok",
-    impressions: 14500,
-    clicks: 920,
-    conversions: 175,
-    cost: "$410"
-  },
-  {
-    id: "19",
-    campaign: "Awareness Drive",
-    platform: "LinkedIn",
-    impressions: 11800,
-    clicks: 760,
-    conversions: 155,
-    cost: "$380"
-  },
-  {
-    id: "20",
-    campaign: "Retargeting 2",
-    platform: "Twitter",
-    impressions: 9500,
-    clicks: 640,
-    conversions: 120,
-    cost: "$330"
-  },
-  {
-    id: "21",
-    campaign: "Promo C",
-    platform: "Google",
-    impressions: 21000,
-    clicks: 1600,
-    conversions: 370,
-    cost: "$1000"
-  },
-  {
-    id: "22",
-    campaign: "Brand Boost",
-    platform: "Facebook",
-    impressions: 10800,
-    clicks: 710,
-    conversions: 135,
-    cost: "$340"
-  },
-  {
-    id: "23",
-    campaign: "Spring Fling",
-    platform: "Instagram",
-    impressions: 15500,
-    clicks: 980,
-    conversions: 205,
-    cost: "$520"
-  },
-  {
-    id: "24",
-    campaign: "Holiday Magic",
-    platform: "Snapchat",
-    impressions: 9200,
-    clicks: 600,
-    conversions: 105,
-    cost: "$290"
-  },
-  {
-    id: "25",
-    campaign: "Back to Work",
-    platform: "LinkedIn",
-    impressions: 12300,
-    clicks: 790,
-    conversions: 165,
-    cost: "$400"
+    label: 'Lead Quality Score',
+    value: '8.4/10',
+    change: 2.1,
+    changeType: 'positive',
+    icon: 'Star',
+    trend: [7.8, 8.0, 7.9, 8.1, 8.2, 8.3, 8.4],
+    target: '9.0/10',
+    description: 'AI-calculated lead quality score'
   }
-]
+];
+
+// Revenue and users over time (enhanced)
+export const revenueData: ChartDataPoint[] = [
+  { name: 'Jan', revenue: 165000, users: 145000, conversions: 2100, impressions: 1200000, clicks: 48000, ctr: 4.0, cpc: 2.5, roas: 4.2 },
+  { name: 'Feb', revenue: 182000, users: 152000, conversions: 2300, impressions: 1350000, clicks: 54000, ctr: 4.2, cpc: 2.3, roas: 4.5 },
+  { name: 'Mar', revenue: 168000, users: 148000, conversions: 2000, impressions: 1180000, clicks: 47000, ctr: 3.8, cpc: 2.7, roas: 3.9 },
+  { name: 'Apr', revenue: 199000, users: 161000, conversions: 2500, impressions: 1420000, clicks: 56800, ctr: 4.3, cpc: 2.4, roas: 4.8 },
+  { name: 'May', revenue: 215000, users: 167000, conversions: 2700, impressions: 1580000, clicks: 63200, ctr: 4.5, cpc: 2.2, roas: 5.1 },
+  { name: 'Jun', revenue: 231000, users: 172000, conversions: 2900, impressions: 1650000, clicks: 66000, ctr: 4.6, cpc: 2.1, roas: 5.3 },
+  { name: 'Jul', revenue: 218000, users: 169000, conversions: 2750, impressions: 1520000, clicks: 60800, ctr: 4.4, cpc: 2.3, roas: 4.9 },
+  { name: 'Aug', revenue: 244000, users: 175000, conversions: 3100, impressions: 1720000, clicks: 68800, ctr: 4.7, cpc: 2.0, roas: 5.5 },
+  { name: 'Sep', revenue: 229000, users: 171000, conversions: 2850, impressions: 1590000, clicks: 63600, ctr: 4.5, cpc: 2.2, roas: 5.0 },
+  { name: 'Oct', revenue: 267000, users: 178000, conversions: 3200, impressions: 1850000, clicks: 74000, ctr: 4.8, cpc: 1.9, roas: 5.8 },
+  { name: 'Nov', revenue: 283000, users: 182000, conversions: 3400, impressions: 1920000, clicks: 76800, ctr: 4.9, cpc: 1.8, roas: 6.1 },
+  { name: 'Dec', revenue: 298000, users: 187000, conversions: 3600, impressions: 2050000, clicks: 82000, ctr: 5.0, cpc: 1.7, roas: 6.3 }
+];
+
+// Campaign performance (enhanced)
+export const campaignPerformance: ChartDataPoint[] = [
+  { name: 'Google Ads', value: 145000, conversions: 1200, ctr: 4.2, roas: 5.8 },
+  { name: 'Facebook', value: 128000, conversions: 980, ctr: 3.8, roas: 4.9 },
+  { name: 'Instagram', value: 89000, conversions: 720, ctr: 4.5, roas: 5.2 },
+  { name: 'LinkedIn', value: 71000, conversions: 450, ctr: 2.9, roas: 4.1 },
+  { name: 'Twitter', value: 48000, conversions: 320, ctr: 3.2, roas: 3.8 },
+  { name: 'TikTok', value: 65000, conversions: 580, ctr: 5.1, roas: 6.2 },
+  { name: 'YouTube', value: 52000, conversions: 380, ctr: 3.6, roas: 4.3 },
+  { name: 'Pinterest', value: 34000, conversions: 240, ctr: 4.8, roas: 5.5 }
+];
+
+// Traffic sources (enhanced)
+export const trafficSources: ChartDataPoint[] = [
+  { name: 'Organic Search', value: 42, users: 241000 },
+  { name: 'Paid Search', value: 28, users: 161000 },
+  { name: 'Social Media', value: 18, users: 103000 },
+  { name: 'Direct', value: 8, users: 46000 },
+  { name: 'Email', value: 4, users: 23000 }
+];
+
+// Geographic data
+export const geographicData: GeographicData[] = [
+  { country: 'United States', users: 245000, revenue: 1200000, conversion_rate: 3.2, coordinates: [39.8283, -98.5795] },
+  { country: 'United Kingdom', users: 89000, revenue: 420000, conversion_rate: 2.8, coordinates: [55.3781, -3.4360] },
+  { country: 'Canada', users: 67000, revenue: 310000, conversion_rate: 3.1, coordinates: [56.1304, -106.3468] },
+  { country: 'Australia', users: 54000, revenue: 280000, conversion_rate: 3.4, coordinates: [-25.2744, 133.7751] },
+  { country: 'Germany', users: 78000, revenue: 350000, conversion_rate: 2.9, coordinates: [51.1657, 10.4515] },
+  { country: 'France', users: 62000, revenue: 290000, conversion_rate: 2.7, coordinates: [46.2276, 2.2137] },
+  { country: 'Japan', users: 45000, revenue: 240000, conversion_rate: 3.6, coordinates: [36.2048, 138.2529] }
+];
+
+// Device breakdown
+export const deviceData: DeviceData[] = [
+  { device: 'Desktop', users: 298000, sessions: 456000, bounce_rate: 32.1, avg_session_duration: 245 },
+  { device: 'Mobile', users: 234000, sessions: 389000, bounce_rate: 45.2, avg_session_duration: 156 },
+  { device: 'Tablet', users: 52000, sessions: 78000, bounce_rate: 38.7, avg_session_duration: 198 }
+];
+
+// Conversion funnel
+export const funnelData: FunnelData[] = [
+  { stage: 'Visitors', users: 584953, conversion_rate: 100, drop_off: 0 },
+  { stage: 'Product Views', users: 234567, conversion_rate: 40.1, drop_off: 59.9 },
+  { stage: 'Add to Cart', users: 89234, conversion_rate: 15.3, drop_off: 24.8 },
+  { stage: 'Checkout', users: 45678, conversion_rate: 7.8, drop_off: 7.5 },
+  { stage: 'Purchase', users: 28429, conversion_rate: 4.9, drop_off: 2.9 }
+];
+
+// Heatmap data (hour vs day)
+export const heatmapData: HeatmapData[] = [
+  // Monday
+  { hour: 0, day: 'Mon', value: 12 }, { hour: 1, day: 'Mon', value: 8 }, { hour: 2, day: 'Mon', value: 5 },
+  { hour: 3, day: 'Mon', value: 3 }, { hour: 4, day: 'Mon', value: 2 }, { hour: 5, day: 'Mon', value: 4 },
+  { hour: 6, day: 'Mon', value: 15 }, { hour: 7, day: 'Mon', value: 28 }, { hour: 8, day: 'Mon', value: 45 },
+  { hour: 9, day: 'Mon', value: 67 }, { hour: 10, day: 'Mon', value: 78 }, { hour: 11, day: 'Mon', value: 82 },
+  { hour: 12, day: 'Mon', value: 89 }, { hour: 13, day: 'Mon', value: 85 }, { hour: 14, day: 'Mon', value: 92 },
+  { hour: 15, day: 'Mon', value: 88 }, { hour: 16, day: 'Mon', value: 76 }, { hour: 17, day: 'Mon', value: 65 },
+  { hour: 18, day: 'Mon', value: 54 }, { hour: 19, day: 'Mon', value: 43 }, { hour: 20, day: 'Mon', value: 38 },
+  { hour: 21, day: 'Mon', value: 32 }, { hour: 22, day: 'Mon', value: 25 }, { hour: 23, day: 'Mon', value: 18 },
+  // Tuesday
+  { hour: 0, day: 'Tue', value: 14 }, { hour: 1, day: 'Tue', value: 9 }, { hour: 2, day: 'Tue', value: 6 },
+  { hour: 3, day: 'Tue', value: 4 }, { hour: 4, day: 'Tue', value: 3 }, { hour: 5, day: 'Tue', value: 5 },
+  { hour: 6, day: 'Tue', value: 18 }, { hour: 7, day: 'Tue', value: 32 }, { hour: 8, day: 'Tue', value: 48 },
+  { hour: 9, day: 'Tue', value: 71 }, { hour: 10, day: 'Tue', value: 83 }, { hour: 11, day: 'Tue', value: 87 },
+  { hour: 12, day: 'Tue', value: 94 }, { hour: 13, day: 'Tue', value: 91 }, { hour: 14, day: 'Tue', value: 97 },
+  { hour: 15, day: 'Tue', value: 93 }, { hour: 16, day: 'Tue', value: 81 }, { hour: 17, day: 'Tue', value: 69 },
+  { hour: 18, day: 'Tue', value: 58 }, { hour: 19, day: 'Tue', value: 47 }, { hour: 20, day: 'Tue', value: 41 },
+  { hour: 21, day: 'Tue', value: 35 }, { hour: 22, day: 'Tue', value: 28 }, { hour: 23, day: 'Tue', value: 21 },
+  // Continue for other days...
+  { hour: 0, day: 'Wed', value: 16 }, { hour: 1, day: 'Wed', value: 11 }, { hour: 2, day: 'Wed', value: 7 },
+  { hour: 3, day: 'Wed', value: 5 }, { hour: 4, day: 'Wed', value: 4 }, { hour: 5, day: 'Wed', value: 6 },
+  { hour: 6, day: 'Wed', value: 20 }, { hour: 7, day: 'Wed', value: 35 }, { hour: 8, day: 'Wed', value: 52 },
+  { hour: 9, day: 'Wed', value: 75 }, { hour: 10, day: 'Wed', value: 88 }, { hour: 11, day: 'Wed', value: 92 },
+  { hour: 12, day: 'Wed', value: 99 }, { hour: 13, day: 'Wed', value: 96 }, { hour: 14, day: 'Wed', value: 100 },
+  { hour: 15, day: 'Wed', value: 98 }, { hour: 16, day: 'Wed', value: 86 }, { hour: 17, day: 'Wed', value: 74 },
+  { hour: 18, day: 'Wed', value: 62 }, { hour: 19, day: 'Wed', value: 51 }, { hour: 20, day: 'Wed', value: 44 },
+  { hour: 21, day: 'Wed', value: 38 }, { hour: 22, day: 'Wed', value: 31 }, { hour: 23, day: 'Wed', value: 24 }
+];
+
+// Enhanced campaign table data
+export const campaignTableData: CampaignData[] = [
+  {
+    id: '1',
+    name: 'Holiday Sale Campaign',
+    status: 'active',
+    budget: 25000,
+    spent: 18750,
+    clicks: 8924,
+    impressions: 245680,
+    ctr: 3.63,
+    conversions: 342,
+    cost_per_conversion: 54.82,
+    roi: 285,
+    platform: 'Google Ads',
+    audience_size: 2500000,
+    engagement_rate: 4.2
+  },
+  {
+    id: '2',
+    name: 'Brand Awareness Q4',
+    status: 'active',
+    budget: 15000,
+    spent: 12300,
+    clicks: 5641,
+    impressions: 189450,
+    ctr: 2.98,
+    conversions: 198,
+    cost_per_conversion: 62.12,
+    roi: 156,
+    platform: 'Facebook',
+    audience_size: 1800000,
+    engagement_rate: 3.8
+  },
+  {
+    id: '3',
+    name: 'Product Launch - Mobile',
+    status: 'paused',
+    budget: 8000,
+    spent: 6800,
+    clicks: 3254,
+    impressions: 125670,
+    ctr: 2.59,
+    conversions: 124,
+    cost_per_conversion: 54.84,
+    roi: 198,
+    platform: 'Instagram',
+    audience_size: 950000,
+    engagement_rate: 5.1
+  },
+  {
+    id: '4',
+    name: 'Retargeting Campaign',
+    status: 'active',
+    budget: 12000,
+    spent: 9240,
+    clicks: 4892,
+    impressions: 95430,
+    ctr: 5.13,
+    conversions: 267,
+    cost_per_conversion: 34.61,
+    roi: 324,
+    platform: 'Google Ads',
+    audience_size: 450000,
+    engagement_rate: 6.8
+  },
+  {
+    id: '5',
+    name: 'Lead Generation B2B',
+    status: 'completed',
+    budget: 20000,
+    spent: 19850,
+    clicks: 7234,
+    impressions: 234560,
+    ctr: 3.08,
+    conversions: 445,
+    cost_per_conversion: 44.61,
+    roi: 267,
+    platform: 'LinkedIn',
+    audience_size: 1200000,
+    engagement_rate: 2.9
+  },
+  {
+    id: '6',
+    name: 'Video Marketing Campaign',
+    status: 'active',
+    budget: 18000,
+    spent: 14200,
+    clicks: 6789,
+    impressions: 198750,
+    ctr: 3.42,
+    conversions: 289,
+    cost_per_conversion: 49.13,
+    roi: 203,
+    platform: 'YouTube',
+    audience_size: 3200000,
+    engagement_rate: 4.5
+  },
+  {
+    id: '7',
+    name: 'TikTok Viral Campaign',
+    status: 'active',
+    budget: 10000,
+    spent: 7500,
+    clicks: 12450,
+    impressions: 567890,
+    ctr: 2.19,
+    conversions: 156,
+    cost_per_conversion: 48.08,
+    roi: 189,
+    platform: 'TikTok',
+    audience_size: 5600000,
+    engagement_rate: 8.2
+  },
+  {
+    id: '8',
+    name: 'Email Nurture Sequence',
+    status: 'active',
+    budget: 5000,
+    spent: 3200,
+    clicks: 2890,
+    impressions: 45600,
+    ctr: 6.34,
+    conversions: 234,
+    cost_per_conversion: 13.68,
+    roi: 456,
+    platform: 'Email',
+    audience_size: 125000,
+    engagement_rate: 12.4
+  }
+];
+
+// AI Insights
+export const aiInsights: AIInsight[] = [
+  {
+    id: '1',
+    type: 'opportunity',
+    title: 'Optimize TikTok Campaign Timing',
+    description: 'AI analysis shows 34% higher engagement rates between 6-9 PM. Shifting budget allocation could increase conversions by 28%.',
+    impact: 'high',
+    confidence: 87,
+    action: 'Adjust ad scheduling',
+    metric_affected: 'Conversions',
+    potential_value: '+$45,000 monthly'
+  },
+  {
+    id: '2',
+    type: 'warning',
+    title: 'Facebook Campaign Fatigue Detected',
+    description: 'CTR has declined 15% over the past 2 weeks. Creative refresh recommended to maintain performance.',
+    impact: 'medium',
+    confidence: 92,
+    action: 'Update ad creatives',
+    metric_affected: 'CTR',
+    potential_value: 'Prevent -$12,000 loss'
+  },
+  {
+    id: '3',
+    type: 'recommendation',
+    title: 'Expand to Pinterest Advertising',
+    description: 'Similar audience segments show 23% higher conversion rates on Pinterest. Recommended budget: $8,000/month.',
+    impact: 'medium',
+    confidence: 78,
+    action: 'Launch Pinterest campaigns',
+    metric_affected: 'Revenue',
+    potential_value: '+$32,000 monthly'
+  },
+  {
+    id: '4',
+    type: 'prediction',
+    title: 'Q1 Revenue Forecast',
+    description: 'Based on current trends and seasonality, Q1 revenue is projected to reach $3.2M (+18% vs Q4).',
+    impact: 'high',
+    confidence: 84,
+    metric_affected: 'Revenue',
+    potential_value: '$3.2M projected'
+  },
+  {
+    id: '5',
+    type: 'opportunity',
+    title: 'Mobile Conversion Optimization',
+    description: 'Mobile users show 45% lower conversion rates. Implementing AMP pages could improve mobile conversions by 31%.',
+    impact: 'high',
+    confidence: 89,
+    action: 'Implement AMP pages',
+    metric_affected: 'Mobile Conversions',
+    potential_value: '+$28,000 monthly'
+  },
+  {
+    id: '6',
+    type: 'recommendation',
+    title: 'Lookalike Audience Expansion',
+    description: 'Top 1% customer lookalike audiences show 67% higher LTV. Expanding reach could increase quality leads.',
+    impact: 'medium',
+    confidence: 81,
+    action: 'Create lookalike campaigns',
+    metric_affected: 'Lead Quality',
+    potential_value: '+$18,000 monthly'
+  }
+];
+
+// Generate random data for real-time updates
+export const generateRandomMetrics = (): MetricData[] => {
+  return metricsData.map(metric => ({
+    ...metric,
+    value: metric.label === 'Total Revenue' 
+      ? `$${(Math.random() * 200000 + 2700000).toLocaleString('en-US', { maximumFractionDigits: 0 })}`
+      : metric.label === 'Active Users'
+      ? (Math.random() * 100000 + 550000).toLocaleString('en-US', { maximumFractionDigits: 0 })
+      : metric.label === 'Conversions'
+      ? (Math.random() * 10000 + 25000).toLocaleString('en-US', { maximumFractionDigits: 0 })
+      : metric.label === 'ROAS'
+      ? `${(Math.random() * 2 + 4).toFixed(1)}x`
+      : metric.label === 'Customer LTV'
+      ? `$${(Math.random() * 200 + 1200).toFixed(0)}`
+      : metric.label === 'Churn Rate'
+      ? `${(Math.random() * 1 + 2).toFixed(1)}%`
+      : metric.label === 'Avg. Order Value'
+      ? `$${(Math.random() * 20 + 120).toFixed(0)}`
+      : `${(Math.random() * 2 + 8).toFixed(1)}/10`,
+    change: (Math.random() - 0.5) * 20,
+    trend: Array.from({ length: 7 }, () => Math.random() * 1000 + 1000)
+  }));
+};

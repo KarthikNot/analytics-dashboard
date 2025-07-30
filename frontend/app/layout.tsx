@@ -1,24 +1,32 @@
-import "./globals.css"
-import { ThemeProvider } from "@/components/ThemeProvider"
-import { Inter } from "next/font/google"
-import Navbar from "@/components/Navbar"
+import './globals.css';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import { ThemeProvider } from '@/components/theme-provider';
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ['latin'] });
 
-export const metadata = {
-  title: "Digital Marketing Dashboard",
-  description: "Modern dashboard using Next.js + shadcn/ui",
-}
+export const metadata: Metadata = {
+  title: 'ADmyBRAND Insights - AI-Powered Analytics Dashboard',
+  description: 'Advanced analytics dashboard for digital marketing agencies with AI-powered insights',
+};
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <Navbar />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
           {children}
         </ThemeProvider>
       </body>
     </html>
-  )
+  );
 }
